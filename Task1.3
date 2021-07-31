@@ -1,0 +1,56 @@
+#include <LiquidCrystal.h>
+const int LM35 = A0;
+const int motor = 13;
+const int LedRed = 12;
+const byte interruptPin= 2;
+volatile byte state = LOW;
+
+
+LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
+
+void setup() {
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  lcd.print("Plant Montoring");
+  lcd.setCursor(0,1);
+  lcd.print("Watering System!");
+  pinMode(LedRed, OUTPUT);
+  delay(500);
+  lcd.clear();
+  lcd.print("Temp = " );
+  lcd.setCursor(0,1);
+  lcd.print("WaterPump = " );
+  pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), blink, RISING);
+}
+
+void loop() {
+
+  int value = analogRead(LM35);
+  float Temperature = value * 500.0 / 1023.0;
+  lcd.setCursor(6,0);
+  lcd.print(Temperature); 
+  lcd.setCursor(11,1);
+  
+
+  if (Temperature > 50){
+  digitalWrite(LedRed, HIGH);
+  Serial.print("Water Pump:");
+  Serial.println(" ON");
+  lcd.print("ON ");
+  }
+  else {
+  digitalWrite(LedRed, LOW);
+  Serial.print("Water Pump:");
+  Serial.println(" OFF");
+  lcd.print("OFF");
+    lcd.print("OFF");
+  }
+  
+   delay(1000);
+}
+
+void blink() 
+{
+  state = !state;
+}
